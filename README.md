@@ -1,6 +1,8 @@
 # EC2 Lab
 DevOps IaC for EC2
 
+[MarkDown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet#code)
+
 ## Notes
 
 git branch - this will show current branch
@@ -15,4 +17,3 @@ git commit -m "message" - this is how to commit changes
 
 git push - this is how to push it to the branch
 
-[MarkDown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet#code)
