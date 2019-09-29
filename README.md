@@ -2,6 +2,9 @@
 DevOps IaC for EC2
 
 ## Notes
+
+git branch - this will show current branch
+
 git checkout branch name - this is the comand to change branches
 
 git pull <URL> - this is how to get the recent version of the branch
