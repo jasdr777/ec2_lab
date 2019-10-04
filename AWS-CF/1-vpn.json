@@ -1,4 +1,7 @@
 {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template is intended to create the VPC and the subnets for it.",
+
     "Mappings" : {
         "RegionMap" : {
             "us-east-1" : {
@@ -14,7 +17,7 @@
                 "PUBLIC2" : "172.18.32.0/19",
                 "PRIVATE1" : "172.18.64.0/19",
                 "PRIVATE2" : "172.18.96.0/19"
-            },
+            }
         }
     },
 
@@ -63,7 +66,16 @@
                 "VpcId" : {"Ref" : "myVPC"},
                 "DhcpOptionsId" : {"Ref" : "myDhcpOptions"}
                 }
-    }
+        }
+    },
 
+    "Outputs": {
+        "StackVPC" : {
+            "Description" : "Virtual Private Cloud",
+            "Value" : {"Ref" :  "myVPC"},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-VPCID" }
+            }
+        }
     }
 }
