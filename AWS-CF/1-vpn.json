@@ -1,3 +1,69 @@
 {
-    
+    "Mappings" : {
+        "RegionMap" : {
+            "us-east-1" : {
+                "CIDR" : "172.16.0.0/16",
+                "PUBLIC1" : "172.16.0.0/19",
+                "PUBLIC2" : "172.16.32.0/19",
+                "PRIVATE1" : "172.16.64.0/19",
+                "PRIVATE2" : "172.16.96.0/19"
+            },
+            "us-west-1" : {
+                "CIDR" : "172.18.0.0/16",
+                "PUBLIC1" : "172.18.0.0/19",
+                "PUBLIC2" : "172.18.32.0/19",
+                "PRIVATE1" : "172.18.64.0/19",
+                "PRIVATE2" : "172.18.96.0/19"
+            },
+        }
+    },
+
+    "Resources" : {
+
+        "myVPC" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : {
+            "CidrBlock" : {
+                "Fn::FindInMap" : [
+                    "RegionMap",
+                    {
+                        "Ref" : "AWS::Region"
+                    },
+                    "CIDR"
+                ]
+            },
+            "EnableDnsSupport" : "true",
+            "EnableDnsHostnames" : "true",
+            "InstanceTenancy" : "default",
+            "Tags" : [ 
+                {"Key" : "Name", "Value" : "myVPC"},
+                {"Key" : "Env", "Value" : "Prod"}
+            ]
+            }
+        },
+
+        "myDhcpOptions" : {
+            "Type" : "AWS::EC2::DHCPOptions",
+            "Properties" : {
+                "DomainName" : "obotix.prod.internal",
+                "DomainNameServers" : [ "AmazonProvidedDNS" ],
+                "NtpServers" : [ "10.2.5.1" ],
+                "NetbiosNameServers" : [ "10.2.5.1" ],
+                "NetbiosNodeType" : 2,
+                "Tags" : [ 
+                    { "Key" : "Name", "Value" : "myDhcpOptions" } ,
+                    {"Key" : "Env", "Value" : "Prod"}
+                ]
+            }
+        },
+
+        "myVPCDHCPOptionsAssociation" : {
+            "Type" : "AWS::EC2::VPCDHCPOptionsAssociation",
+            "Properties" : {
+                "VpcId" : {"Ref" : "myVPC"},
+                "DhcpOptionsId" : {"Ref" : "myDhcpOptions"}
+                }
+    }
+
+    }
 }
