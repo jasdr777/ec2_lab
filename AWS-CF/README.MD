@@ -8,4 +8,14 @@ Ideally, each of the JSON CloudFormation files are to be ran in sequence (ascend
 
 [JSON Find in Map](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-findinmap.html)
 
-[Create VPN](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html)
+[VPC](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html)
+
+
+Public Subnet connected to a Public Router Table, connected to the VPN.
+
+## CF File Strategy
+
+1-vpn.json - This contains only what is needed to create a clean VPN.
+2-vpn-public-subnet - This contains only what is needed to create a public subnet with firewall ACL
+3-vpn-private-subnet - Same as 2, but private with NAT to Internet Gateway
+4-vpn-linux-bastion - This is the Linux jumpbox, lives on Public subnet.
