@@ -59,6 +59,41 @@
                 "VpcId" : {"Ref" : "myVPC"},
                 "DhcpOptionsId" : {"Ref" : "myDhcpOptions"}
                 }
+        },
+
+        "myDefaultSG": {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "devDefaultSG",
+                "GroupDescription" : "Default Security Group for VPC.",
+                "VpcId" : {"Ref" : "myVPC"},
+                "Tags" : [ 
+                    { "Key" : "Name", "Value" : "myDefaultSG" } ,
+                    {"Key" : "VPC", "Value" : "myVPC"}
+                ]
+            }
+        },
+
+        "myDefaultSGInboundRule" : {
+            "Type" : "AWS::EC2::SecurityGroupIngress",
+            "Properties" : {
+                "IpProtocol" : -1,
+                "FromPort" : -1,
+                "ToPort" : -1,
+                "SourceSecurityGroupId" : { "Ref" : "myDefaultSG" },
+                "GroupId" : { "Ref" :  "myDefaultSG" }
+            }
+        },
+    
+        "myDefaultSGOutboundRule" : {
+            "Type" : "AWS::EC2::SecurityGroupEgress",
+            "Properties" : {
+                "IpProtocol" : -1,
+                "FromPort" : -1,
+                "ToPort" : -1,
+                "CidrIp" : "0.0.0.0/0",
+                "GroupId" : { "Ref" : "myDefaultSG"   }       
+            }
         }
     },
 
