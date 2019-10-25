@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Creates the VPC with 172.1x.x.x",
+    "Description": "Creates the VPC with 172.16.x.x",
 
     "Mappings" : {
         "RegionMap" : {
