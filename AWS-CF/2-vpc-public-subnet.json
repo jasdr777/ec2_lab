@@ -1,11 +1,11 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template is intended to create the VPC and the subnets for it.",
+    "Description": "Creates the VPC public subnets with internet gateway.",
     
     "Parameters" : {
-        "VPNParameter" : {
+        "VPCParameter" : {
           "Type" : "String",
-          "Description" : "VPN Resource Identifyer from 1-vpn.json"
+          "Description" : "VPC ARN from 1-vpn.json"
         }
       },
 
@@ -14,13 +14,9 @@
             "PublicSubnets" : {
                 "PUBLIC1" : "172.16.0.0/19",
                 "PUBLIC2" : "172.16.32.0/19"
-            },
-            "PrivateSubnets" : {
-                "PRIVATE1" : "172.18.64.0/19",
-                "PRIVATE2" : "172.18.96.0/19"
             }
         }
-    },
+      },
 
     "Resources" : {
 
@@ -37,7 +33,7 @@
          "myInternetGatewayAttachment" : {
             "Type" : "AWS::EC2::VPCGatewayAttachment",
             "Properties" : {
-               "VpcId" : { "Ref" : "VPNParameter" },
+               "VpcId" : { "Ref" : "VPCParameter" },
                "InternetGatewayId" : { "Ref" : "myInternetGateway" }
              }
          },
@@ -45,7 +41,7 @@
          "myPublicSubnet1" : {
             "Type" : "AWS::EC2::Subnet",
             "Properties" : {
-               "VpcId" : { "Ref" : "VPNParameter" },
+               "VpcId" : { "Ref" : "VPCParameter" },
                "CidrBlock" : {
                 "Fn::FindInMap" : [
                     "SubnetMap",
@@ -69,7 +65,7 @@
          "myPublicSubnet2" : {
             "Type" : "AWS::EC2::Subnet",
             "Properties" : {
-               "VpcId" : { "Ref" : "VPNParameter" },
+               "VpcId" : { "Ref" : "VPCParameter" },
                "CidrBlock" : {
                 "Fn::FindInMap" : [
                     "SubnetMap",
@@ -93,7 +89,7 @@
          "myPublicRouteTable" : {
             "Type" : "AWS::EC2::RouteTable",
             "Properties" : {
-               "VpcId" : { "Ref" : "VPNParameter" },
+               "VpcId" : { "Ref" : "VPCParameter" },
                "Tags" : [ { "Key" : "Name", "Value" : "myPublicRouteTable" } ]
             }
          },
@@ -127,7 +123,7 @@
          "myPublicNetworkAcl" : {
             "Type" : "AWS::EC2::NetworkAcl",
             "Properties" : {
-               "VpcId" : { "Ref" : "VPNParameter" },
+               "VpcId" : { "Ref" : "VPCParameter" },
                "Tags" : [ { "Key" : "Name", "Value" : "myPublicNetworkAcl" } ]
             }
          },
@@ -172,6 +168,37 @@
             }
          }
 
+    },
+
+    "Outputs": {
+        "StackInternetGateway" : {
+            "Description" : "Internet Gateway",
+            "Value" : {"Ref" :  "myInternetGateway"},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-iGateway" }
+            }
+        },
+        "StackPublicRouteTable" : {
+            "Description" : "Public Route Table",
+            "Value" : {"Ref" :  "myPublicRouteTable"},
+            "Export" : {
+               "Name" : { "Fn::Sub" : "${AWS::StackName}-PubRouteTable" }
+            }
+        },
+        "StackIPublicSubnet1" : {
+            "Description" : "Public Subnet 1",
+            "Value" : {"Ref" :  "myPublicSubnet1"},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-PubSubnet1" }
+            }
+        },
+        "StackIPublicSubnet2" : {
+            "Description" : "Public Subnet 2",
+            "Value" : {"Ref" :  "myPublicSubnet2"},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-PubSubnet2" }
+            }
+        }
     }
 
 }

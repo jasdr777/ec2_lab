@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template is intended to create the VPC and the subnets for it.",
+    "Description": "Creates the VPC with 172.1x.x.x",
 
     "Mappings" : {
         "RegionMap" : {
@@ -10,13 +10,6 @@
                 "PUBLIC2" : "172.16.32.0/19",
                 "PRIVATE1" : "172.16.64.0/19",
                 "PRIVATE2" : "172.16.96.0/19"
-            },
-            "us-west-1" : {
-                "CIDR" : "172.18.0.0/16",
-                "PUBLIC1" : "172.18.0.0/19",
-                "PUBLIC2" : "172.18.32.0/19",
-                "PRIVATE1" : "172.18.64.0/19",
-                "PRIVATE2" : "172.18.96.0/19"
             }
         }
     },
