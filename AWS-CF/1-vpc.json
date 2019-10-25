@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template is intended to create the VPC and the subnets for it.",
+    "Description": "Creates the VPC with 172.16.x.x",
 
     "Mappings" : {
         "RegionMap" : {
@@ -10,13 +10,6 @@
                 "PUBLIC2" : "172.16.32.0/19",
                 "PRIVATE1" : "172.16.64.0/19",
                 "PRIVATE2" : "172.16.96.0/19"
-            },
-            "us-west-1" : {
-                "CIDR" : "172.18.0.0/16",
-                "PUBLIC1" : "172.18.0.0/19",
-                "PUBLIC2" : "172.18.32.0/19",
-                "PRIVATE1" : "172.18.64.0/19",
-                "PRIVATE2" : "172.18.96.0/19"
             }
         }
     },
@@ -66,6 +59,41 @@
                 "VpcId" : {"Ref" : "myVPC"},
                 "DhcpOptionsId" : {"Ref" : "myDhcpOptions"}
                 }
+        },
+
+        "myDefaultSG": {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "devDefaultSG",
+                "GroupDescription" : "Default Security Group for VPC.",
+                "VpcId" : {"Ref" : "myVPC"},
+                "Tags" : [ 
+                    { "Key" : "Name", "Value" : "myDefaultSG" } ,
+                    {"Key" : "VPC", "Value" : "myVPC"}
+                ]
+            }
+        },
+
+        "myDefaultSGInboundRule" : {
+            "Type" : "AWS::EC2::SecurityGroupIngress",
+            "Properties" : {
+                "IpProtocol" : -1,
+                "FromPort" : -1,
+                "ToPort" : -1,
+                "SourceSecurityGroupId" : { "Ref" : "myDefaultSG" },
+                "GroupId" : { "Ref" :  "myDefaultSG" }
+            }
+        },
+    
+        "myDefaultSGOutboundRule" : {
+            "Type" : "AWS::EC2::SecurityGroupEgress",
+            "Properties" : {
+                "IpProtocol" : -1,
+                "FromPort" : -1,
+                "ToPort" : -1,
+                "CidrIp" : "0.0.0.0/0",
+                "GroupId" : { "Ref" : "myDefaultSG"   }       
+            }
         }
     },
 
