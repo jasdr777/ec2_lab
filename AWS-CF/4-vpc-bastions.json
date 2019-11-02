@@ -7,17 +7,29 @@
           "Type" : "String",
           "Description" : "VPC ARN from 1-vpc.json"
         },
-        "AdminIP" : {
+        "AdminIPParameter" : {
             "Type" : "String",
             "Description" : "Account owners IP address. Ex: 99.99.99.99/32"
+        },
+        "KeyPairParameter" : {
+            "Type" : "String",
+            "Description" : "KeyPair.pem name to be used"
+        },
+        "PublicSubnet1Parameter" : {
+            "Type" : "String",
+            "Description" : "Public Subnet 1 ARN from 2-vpc-public-subnet.json"
+        },
+        "PublicSubnet2Parameter" : {
+            "Type" : "String",
+            "Description" : "Public Subnet 2 ARN from 2-vpc-public-subnet.json"
         }
     },
 
     "Mappings" : {
-        "SubnetMap" : {
-            "PrivateSubnets" : {
-                "PRIVATE1" : "172.16.64.0/19",
-                "PRIVATE2" : "172.16.96.0/19"
+        "RegionMap" : {
+            "us-east-1" : {
+                "LinuxAMI" : "ami-00dc79254d0461090",
+                "WindowsAMI" : "ami-027a14492d667b8f5"
             }
         }
     },
@@ -35,15 +47,15 @@
                     { "IpProtocol" : "tcp",
                     "FromPort": 22,
                     "ToPort" : 22,
-                    "CidrIp" : { "Ref" : "AdminIP" } },
+                    "CidrIp" : { "Ref" : "AdminIPParameter" } },
                     { "IpProtocol" : "tcp",
                     "FromPort" : 3389,
                     "ToPort" : 3389,
-                    "CidrIp" : { "Ref" : "AdminIP" } },
+                    "CidrIp" : { "Ref" : "AdminIPParameter" } },
                     { "IpProtocol" : "tcp",
                     "FromPort" : 8080,
                     "ToPort" : 8080,
-                    "CidrIp" : { "Ref" : "AdminIP" } }
+                    "CidrIp" : { "Ref" : "AdminIPParameter" } }
                 ],
                 "SecurityGroupEgress" : [
                     {"IpProtocol" : "tcp",
@@ -57,9 +69,33 @@
                 ],
                 "Tags" : [ {"Key" : "Name", "Value" : "myBastionSG" } ]
             }
+        },
+
+        "myLinuxBastion1" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties": {
+                "InstanceType" : "t2.micro",
+                "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "LinuxAMI" ]},
+                "KeyName" : { "Ref" : "KeyPairParameter"},
+                "BlockDeviceMappings" : [
+                    {
+                    "DeviceName" : "/dev/xvda",
+                    "Ebs" : {
+                        "VolumeType" : "gp2",
+                        "DeleteOnTermination" : "true",
+                        "VolumeSize" : "8"
+                    }
+                    }
+                ],
+                "NetworkInterfaces": [{
+                    "AssociatePublicIpAddress": "true",
+                    "DeviceIndex": "0",
+                    "GroupSet": [{ "Ref" : "myBastionSG" }],
+                    "SubnetId": { "Ref" : "PublicSubnet1Parameter" }
+                }],
+                "Tags" : [ {"Key" : "Name", "Value" : "myLinuxBastion1" } ]
+            }
         }
-
-
     },
 
     "Outputs": {
@@ -68,6 +104,13 @@
             "Value" : {"Ref" :  "myBastionSG"},
             "Export" : {
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-BastionSG" }
+            }
+        },
+        "StackLinuxBastion1" : {
+            "Description" : "Linux Bastion 1 for Public Subnet  1",
+            "Value" : { "Fn::GetAtt" : [ "myLinuxBastion1", "PublicDnsName" ]},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-LinuxBastion1" }
             }
         }
     }
