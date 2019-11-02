@@ -64,7 +64,7 @@
         "myDefaultSG": {
             "Type" : "AWS::EC2::SecurityGroup",
             "Properties" : {
-                "GroupName" : "devDefaultSG",
+                "GroupName" : "myDefaultSG",
                 "GroupDescription" : "Default Security Group for VPC.",
                 "VpcId" : {"Ref" : "myVPC"},
                 "Tags" : [ 
