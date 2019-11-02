@@ -6,6 +6,10 @@
         "VPCParameter" : {
           "Type" : "String",
           "Description" : "VPC ARN from 1-vpc.json"
+        },
+        "AdminIP" : {
+            "Type" : "String",
+            "Description" : "Account owners IP address. Ex: 99.99.99.99/32"
         }
     },
 
@@ -16,11 +20,55 @@
                 "PRIVATE2" : "172.16.96.0/19"
             }
         }
-      },
+    },
 
     "Resources" : {
+
+
+        "myBastionSG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "myBastionSG",
+                "GroupDescription" : "Public Subnet Administrator Security Group.",
+                "VpcId" : { "Ref" : "VPCParameter" },
+                "SecurityGroupIngress" : [
+                    { "IpProtocol" : "tcp",
+                    "FromPort": 22,
+                    "ToPort" : 22,
+                    "CidrIp" : { "Ref" : "AdminIP" } },
+                    { "IpProtocol" : "tcp",
+                    "FromPort" : 3389,
+                    "ToPort" : 3389,
+                    "CidrIp" : { "Ref" : "AdminIP" } },
+                    { "IpProtocol" : "tcp",
+                    "FromPort" : 8080,
+                    "ToPort" : 8080,
+                    "CidrIp" : { "Ref" : "AdminIP" } }
+                ],
+                "SecurityGroupEgress" : [
+                    {"IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIp" : "0.0.0.0/0"},
+                    {"IpProtocol" : "tcp",
+                        "FromPort" : 443,
+                        "ToPort" : 443,
+                        "CidrIp" : "0.0.0.0/0"}
+                ],
+                "Tags" : [ {"Key" : "Name", "Value" : "myBastionSG" } ]
+            }
+        }
+
+
     },
 
     "Outputs": {
+        "StackBastionSG" : {
+            "Description" : "Security group for Bastion servers",
+            "Value" : {"Ref" :  "myBastionSG"},
+            "Export" : {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-BastionSG" }
+            }
+        }
     }
 }
