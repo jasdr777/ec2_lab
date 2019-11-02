@@ -1,5 +1,25 @@
 # AWS CloudFormation
 
+`aws cloudformation create-stack`
+
+`  --stack-name wjnet-va-prod-vpc`
+
+`  --template-body file://templates/company-prod-01-vpc.yaml`
+
+`  --parameters ParameterKey=AdminIp,ParameterValue=AdminIp`
+
+
+
+# Bastion
+
+ssh -i "devTeam.pem" ec2-user@ec2-18-206-152-248.compute-1.amazonaws.com
+
+Test Results
+- BastionSG worked.
+
+
+# Notes
+
 CloudFormation scripts here are designed to build a traditional EC2 VPN infrastructure.
 
 Ideally, each of the JSON CloudFormation files are to be ran in sequence (ascending order).  Then when we destroy the infrastrucrure they should be ran backwards (descending order).
